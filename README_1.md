@@ -14,12 +14,18 @@
 
 각 일차 맨 아래 **나눔 카드**에서 원하는 단계만 골라 글로 복사해 그룹 채팅방에 올릴 수 있습니다.
 
-파일은 `index.html` 하나뿐이며 서버나 빌드 과정이 필요 없습니다.
+서버나 빌드 과정이 필요 없습니다. 아래 파일을 모두 같은 폴더에 올립니다.
+
+- `index.html` 프로그램 본체
+- `apple-touch-icon.png`, `icon-192.png`, `icon-512.png` 홈 화면 아이콘
+- `manifest.webmanifest` 앱 이름과 아이콘 설정
+
+아이콘을 바꾸려면 같은 이름, 같은 크기(180, 192, 512픽셀 정사각형)의 PNG로 덮어쓰면 됩니다.
 
 ## GitHub Pages로 올리기
 
 1. GitHub에서 새 저장소를 만듭니다. 무료 계정은 저장소가 Public이어야 Pages를 쓸 수 있습니다.
-2. **Add file → Upload files**에서 `index.html`과 `README.md`를 올리고 **Commit changes**를 누릅니다.
+2. **Add file → Upload files**에서 폴더 안의 파일을 모두 올리고 **Commit changes**를 누릅니다.
 3. 저장소의 **Settings → Pages**로 갑니다.
 4. **Source**를 `Deploy from a branch`로, **Branch**를 `main` / `/ (root)`로 고르고 **Save**를 누릅니다.
 5. 1~2분 뒤 `https://<아이디>.github.io/<저장소 이름>/` 주소로 열립니다.
