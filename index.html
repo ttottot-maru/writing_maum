@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>생각 기록 20일</title>
+<meta name="description" content="상황, 신체 반응, 감정, 생각, 이해, 욕구, 점검의 8단계로 적는 생각 기록">
+<meta name="theme-color" content="#EEF1F5">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="생각 기록 20일">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* layout: one narrow column, a 7-step strip on top, one step per screen, prev/next at the bottom */
+:root{
+  --bg:#EEF1F5; --surface:#FFFFFF; --ink:#1E2A3A; --muted:#5C6B7E; --line:#D3DAE4;
+  --accent:#2F4F7F; --on-accent:#FFFFFF; --accent-soft:#E3EAF4;
+  --red:#D2504B; --yellow:#D9A400; --blue:#3F7FC4; --green:#3A9667;
+  --display:"Gowun Batang","Noto Serif KR",serif;
+  --body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --r:12px;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#131920; --surface:#1C2430; --ink:#E6EBF2; --muted:#9BA8B9; --line:#303B4B;
+    --accent:#93B4E4; --on-accent:#10203A; --accent-soft:#263447;
+    --red:#E8736E; --yellow:#E6BC3A; --blue:#6FA6E3; --green:#5FBE8D;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#131920; --surface:#1C2430; --ink:#E6EBF2; --muted:#9BA8B9; --line:#303B4B;
+  --accent:#93B4E4; --on-accent:#10203A; --accent-soft:#263447;
+  --red:#E8736E; --yellow:#E6BC3A; --blue:#6FA6E3; --green:#5FBE8D;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.65;-webkit-text-size-adjust:100%}
+.wrap{max-width:640px;margin:0 auto;padding:20px 16px 48px;display:flex;flex-direction:column;gap:16px}
+header.top{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap}
+h1{font-family:var(--display);font-size:1.7rem;margin:0;line-height:1.2;letter-spacing:-.01em}
+.date{color:var(--muted);font-size:.875rem}
+.tabs{display:flex;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:4px}
+.tabs a{flex:1;text-align:center;padding:8px 14px;border-radius:999px;color:var(--muted);text-decoration:none;font-weight:500;font-size:.95rem}
+.tabs a[aria-current="page"]{background:var(--accent);color:var(--on-accent)}
+.steps{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.steps::-webkit-scrollbar{display:none}
+.steps button{flex:0 0 auto;display:flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:999px;padding:6px 12px 6px 6px;font:inherit;font-size:.85rem;cursor:pointer}
+.steps button .n{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);font-size:.75rem;font-weight:600;font-variant-numeric:tabular-nums}
+.steps button.done .n{background:var(--accent);color:var(--on-accent)}
+.steps button[aria-current="step"]{border-color:var(--accent);color:var(--ink);font-weight:600}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px 18px;display:flex;flex-direction:column;gap:14px}
+.card h2{font-family:var(--display);font-size:1.3rem;margin:0;line-height:1.3;text-wrap:balance}
+.card h2 .n{color:var(--accent);margin-right:8px;font-variant-numeric:tabular-nums}
+.card h3{font-size:1rem;margin:10px 0 0;font-weight:600;text-wrap:balance}
+.hint{color:var(--muted);font-size:.9rem;margin:0}
+textarea{width:100%;min-height:104px;resize:vertical;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit;padding:12px;line-height:1.6}
+textarea.small{min-height:76px}
+textarea::placeholder{color:var(--muted);opacity:.8}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:7px 13px;font:inherit;font-size:.9rem;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--c,var(--accent));border-color:var(--c,var(--accent));color:var(--on-c,var(--on-accent));font-weight:500}
+.mood-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mood{--c:var(--accent);border:2px solid transparent;border-radius:var(--r);background:color-mix(in srgb,var(--c) 18%,var(--surface));color:var(--ink);padding:14px 12px;text-align:left;font:inherit;cursor:pointer;display:flex;flex-direction:column;gap:2px;min-height:86px}
+.mood .name{display:flex;align-items:center;gap:8px;font-weight:600}
+.mood .dot{width:14px;height:14px;border-radius:50%;background:var(--c)}
+.mood .sub{font-size:.82rem;color:var(--muted)}
+.mood .cnt{font-size:.82rem;font-weight:600;margin-top:auto}
+.mood[aria-expanded="true"]{border-color:var(--c);background:color-mix(in srgb,var(--c) 30%,var(--surface))}
+.red{--c:var(--red);--on-c:#fff}.yellow{--c:var(--yellow);--on-c:#221a00}.blue{--c:var(--blue);--on-c:#fff}.green{--c:var(--green);--on-c:#fff}
+.mood-panel{border-left:4px solid var(--c);padding:4px 0 4px 12px;display:flex;flex-direction:column;gap:10px}
+.opt{border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.opt.on{border-color:var(--accent)}
+.opt > button{display:grid;grid-template-columns:22px 1fr;gap:10px;width:100%;text-align:left;background:none;border:0;color:var(--ink);font:inherit;padding:12px;cursor:pointer}
+.opt.on > button{background:var(--accent-soft)}
+.opt .box{width:22px;height:22px;border:2px solid var(--line);border-radius:6px;margin-top:2px;display:grid;place-items:center;color:var(--on-accent);font-size:.8rem;line-height:1}
+.opt.on .box{background:var(--accent);border-color:var(--accent)}
+.opt .t{font-weight:600}
+.opt .d{display:block;font-size:.9rem;color:var(--muted)}
+.opt .e{display:block;font-size:.88rem;margin-top:4px}
+.opt .e::before{content:"예) ";color:var(--muted)}
+.opt .why{padding:0 12px 12px;display:flex;flex-direction:column;gap:6px}
+.opt .why label{font-size:.88rem;color:var(--ink);font-weight:500}
+.opt .why label .d{font-weight:400}
+.opts{display:flex;flex-direction:column;gap:8px}
+.nav{display:flex;gap:10px;justify-content:space-between}
+.btn{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:12px 18px;font:inherit;font-weight:500;cursor:pointer}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent);margin-left:auto}
+.btn.sm{padding:7px 12px;font-size:.88rem}
+.btn.danger{color:var(--red);border-color:var(--red)}
+.btn:disabled{opacity:.4;cursor:default}
+.note{font-size:.85rem;color:var(--muted);margin:0}
+.msg{font-size:.9rem;margin:0;color:var(--red)}
+.rec{background:var(--surface);border:1px solid var(--line);border-radius:var(--r)}
+.rec summary{list-style:none;cursor:pointer;padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+.rec summary::-webkit-details-marker{display:none}
+.rec .when{font-size:.82rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.rec .sit{font-weight:500;overflow-wrap:anywhere}
+.rec .dots{display:flex;flex-wrap:wrap;gap:6px}
+.tag{font-size:.8rem;border-radius:999px;padding:2px 9px;background:color-mix(in srgb,var(--c,var(--accent)) 22%,var(--surface))}
+.rec .body{border-top:1px solid var(--line);padding:14px 16px;display:flex;flex-direction:column;gap:12px}
+.rec dl{margin:0;display:flex;flex-direction:column;gap:10px}
+.rec dt{font-size:.82rem;color:var(--accent);font-weight:600}
+.rec dd{margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
+.rec .acts{display:flex;gap:8px;flex-wrap:wrap}
+.empty{text-align:center;color:var(--muted);padding:32px 12px}
+footer{font-size:.8rem;color:var(--muted);text-align:center}
+[hidden]{display:none!important}
+@media (prefers-reduced-motion:no-preference){.btn,.chip,.mood,.tabs a{transition:background-color .15s,border-color .15s}}
+
+.stack{display:flex;flex-direction:column;gap:14px}
+h1 small{font-family:var(--body);font-size:.9rem;font-weight:500;color:var(--muted);margin-left:6px}
+.bar{height:8px;border-radius:99px;background:var(--accent-soft);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:99px}
+.cal{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.cell{aspect-ratio:1/1;min-height:58px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);font:inherit;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:4px}
+.cell .num{font-family:var(--display);font-size:1.25rem;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums}
+.cell .st{font-size:.7rem;color:var(--muted);line-height:1.2;font-variant-numeric:tabular-nums}
+.cell .dots{display:flex;gap:3px;height:7px}
+.cell .dots i{width:7px;height:7px;border-radius:50%;background:var(--c)}
+.cell.done{background:var(--accent-soft);border-color:var(--accent)}
+.cell.draft{border-style:dashed;border-color:var(--accent)}
+.cell.next{border:2px solid var(--accent)}
+.cell.next .st{color:var(--accent);font-weight:600}
+.cell:disabled{opacity:.45;cursor:default;background:transparent}
+.daytop{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.daytop h2{font-family:var(--display);font-size:1.5rem;margin:0}
+.daytop a{color:var(--accent);text-decoration:none;font-weight:500;margin-right:auto;padding:6px 0}
+.acts{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.sharecard{white-space:pre-wrap;overflow-wrap:anywhere;background:var(--bg);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:10px;padding:14px;font-size:.92rem;line-height:1.6}
+.chip:disabled{opacity:.4;cursor:default}
+.finish{display:flex;gap:10px;flex-wrap:wrap}
+.finish .primary{margin-left:0;flex:1 1 200px}
+</style>
+</head>
+<body>
+<noscript><p style="margin:16px">이 페이지는 자바스크립트가 켜진 브라우저에서 열어야 합니다. 파일 미리보기가 아니라 Safari나 Chrome에서 주소로 열어 주세요.</p></noscript>
+<div class="wrap">
+  <header class="top">
+    <h1>생각 기록<small>20일</small></h1>
+    <span class="date" id="today"></span>
+  </header>
+  <main id="view-cal" class="stack"></main>
+  <main id="view-day" class="stack" hidden></main>
+  <footer>자기 관찰을 돕는 심리교육용 도구입니다. 상담이나 치료를 대신하지 않습니다.</footer>
+</div>
+<script>
+window.onerror=function(m,src,line){var b=document.createElement("p");b.style.cssText="margin:16px;padding:12px;border:2px solid #D2504B;border-radius:10px;font-size:14px";b.textContent="페이지를 여는 중 문제가 생겼습니다. 이 문구를 만든 사람에게 알려 주세요: "+m+" ("+line+")";document.body.insertBefore(b,document.body.firstChild);};
+if(!Element.prototype.replaceChildren){Element.prototype.replaceChildren=function(){while(this.lastChild)this.removeChild(this.lastChild);for(var i=0;i<arguments.length;i++){var c=arguments[i];this.appendChild(typeof c==="string"?document.createTextNode(c):c);}};}
+if(!String.prototype.padStart){String.prototype.padStart=function(n,c){var s=String(this);while(s.length<n)s=(c||" ")+s;return s;};}
+(function(){
+"use strict";
+var STEPS=["상황","신체 반응","감정 관찰","생각 관찰","이해","욕구","다음 행동","점검"];
+var ACTIONS=["심호흡 세 번 하기","물 한 잔 마시기","10분 산책하기","잠시 자리를 벗어나 쉬기","나에게 따뜻한 말 해주기","내 마음을 솔직하게 말하기","상대 이야기를 먼저 들어보기","사실인지 직접 물어 확인하기","부탁하기","사과하기","고마움 표현하기","믿을 만한 사람에게 이야기하기","기도하기","오늘은 두고 내일 다시 생각하기","일찍 잠자리에 들기"];
+var BODY=["심장이 빨리 뜀","가슴이 답답함","숨이 얕아짐","어깨·목이 굳음","턱에 힘이 들어감","얼굴이 달아오름","손에 땀이 남","속이 불편함","머리가 지끈거림","목이 멤","눈물이 남","몸에 힘이 빠짐"];
+var MOODS=[
+ {k:"red",name:"빨강",sub:"활력 높음 · 쾌적함 낮음",words:["격분한", "공황에 빠진", "스트레스 받는", "초조한", "충격받은", "격노한", "몹시 화가 난", "좌절한", "긴장한", "망연자실한", "화가 치밀어 오른", "겁먹은", "화난", "초조한", "안절부절못하는", "불안한", "우려하는", "근심하는", "짜증나는", "거슬리는", "불쾌한", "골치 아픈", "염려하는", "마음이 불편한", "언짢은"]},
+ {k:"yellow",name:"노랑",sub:"활력 높음 · 쾌적함 높음",words:["놀란", "긍정적인", "흥겨운", "아주 신나는", "황홀한", "들뜬", "쾌활한", "동기 부여된", "영감을 받은", "의기양양한", "기운이 넘치는", "활발한", "흥분한", "낙관적인", "열광하는", "만족스러운", "집중하는", "행복한", "자랑스러운", "짜릿한", "유쾌한", "기쁜", "희망찬", "재미있는", "더없이 행복한"]},
+ {k:"blue",name:"파랑",sub:"활력 낮음 · 쾌적함 낮음",words:["역겨운", "침울한", "실망스러운", "의욕 없는", "냉담한", "비관적인", "시무룩한", "낙담한", "슬픈", "지루한", "소외된", "비참한", "쓸쓸한", "기죽은", "피곤한", "의기소침한", "우울한", "뚱한", "기진맥진한", "지친", "절망한", "가망 없는", "고독한", "소모된", "진이 빠진"]},
+ {k:"green",name:"초록",sub:"활력 낮음 · 쾌적함 높음",words:["속 편한", "태평한", "자족하는", "다정한", "충만한", "평온한", "안전한", "만족스러운", "감사하는", "감동적인", "여유로운", "차분한", "편안한", "축복받은", "안정적인", "한가로운", "생각에 잠긴", "평화로운", "편한", "근심 걱정 없는", "나른한", "흐뭇한", "고요한", "안락한", "안온한"]}
+];
+var AUTOS=[
+ {k:"judge",t:"판단",d:"상대나 외부를 바라보면서 해석을 하는 ‘자기만의 틀과 생각’",e:"저 사람은 나를 싫어해"},
+ {k:"blame",t:"비난",d:"부정적 해석을 곁들여 ‘상대에게 잘못이 있으며, 상대가 문제라는 생각’을 포함하는 표현",e:"고마움도 모르는 뻔뻔한 인간 같으니"},
+ {k:"compare",t:"비교",d:"내가 원하는 대로 상대가 해주지 않을 때 상대에게 수치심을 주어서라도 상대를 고치겠다는 방식의 표현",e:"옆집 애는 잘 하던데, 우리 애는 왜 이러지"},
+ {k:"force",t:"강요",d:"실질적 폭력, 무력이나 두려움을 활용해서라도 상대를 움직이게끔 하기 위해 쓰는 방법",e:"좋은 말로 할 때 내 말대로 해"},
+ {k:"granted",t:"당연시",d:"‘인간이라면 마땅히 해야 할 일’이라고 주장하면서 상대에게 어떤 행위를 암묵적으로 강요하는 대화 방식",e:"중학생이면 당연히 이 정도는 해야 하는 거 아니야?"},
+ {k:"rational",t:"합리화",d:"자신의 행위에 대해 반성이나 성찰보다는 남 탓을 하며 이유를 찾을 때 드러나는 표현",e:"네가 제대로 하면 내가 화 낼 일이 없지"}
+];
+var ERRORS=[
+ {k:"binary",t:"이분법적 사고",d:"상황을 양극단적인 측면에서 판단하고 중간을 인정하지 않는 흑백논리 위주의 사고",e:"100점이 아니면 의미 없어. 좋아하는 게 아니면 싫다는 거야."},
+ {k:"overgen",t:"과일반화",d:"한두 번의 경험을 바탕으로 일반적인 결론을 내리고 무관한 상황에서도 그 결론을 적용하는 인지오류 방식",e:"발표에서 한 번 실수했어. 나는 뭘 해도 안 돼."},
+ {k:"filter",t:"정신적 여과",d:"선택적 추상화. 여러 정보 중에서 전체가 아닌 일부를 뽑아내어 선택적으로 주목하고 전체를 판단하는 인지오류",e:"잘 한 것, 못 한 것 다 피드백 했는데 – 결국 내 보고서가 별로라는 거지?"},
+ {k:"jump",t:"비약적 결론",d:"확인하지 않고 성급한 결론을 내리는 방식",e:"다툰 뒤로 남편이 이번 주 내내 늦게 들어온다. 나에 대한 마음이 완전히 떠난 게 분명하다"},
+ {k:"magnify",t:"과대평가 / 과소평가",d:"사건의 의미나 중요성을 실제보다 과도하게 확대, 혹은 지나치게 축소하는 것",e:"과대평가: 아이가 리더십이 좋다고 선생님이 말했다. 우리 애는 반드시 크게 성공할 거다 / 과소평가: 상사가 잘 했다고 했지만, 운이 좋았을 뿐이야"},
+ {k:"emotional",t:"감정적 추론",d:"어떤 상황 중에 현실적 근거 없이 막연한 감정을 느낄 때 그 막연한 감정에 따라 결론을 내리는 방식",e:"아이들에게 죄책감이 든다. 나는 좋은 엄마가 아니다"},
+ {k:"should",t:"당위적 진술",d:"‘당연히 해야 한다’와 ‘반드시 해야 한다’는 유연성, 개방성이 없는 생각",e:"친구라면 당연히 내 편을 들어줘야지"},
+ {k:"label",t:"명명하기",d:"극단적이고 정당하지 않은 이름을 자기 자신에게 붙이는 것",e:"나는 실패자야. 인생 낙오자야"},
+ {k:"personal",t:"개인화",d:"자신과 무관한 사건인데도 불구하고 자신과 관련된 것으로 잘못 해석하는 것",e:"모임에서 그 사람이 웃은 건 나를 무시하기 때문이다"},
+ {k:"catastrophe",t:"재앙화",d:"대안적인 가능성에 대한 고려 없이 최악의 부정적인 결과를 예상하는 것",e:"지금 이대로 성장하면 내 자식의 인생은 꼬일 것이다"},
+ {k:"mindread",t:"독심술",d:"타인이 어떤 생각을 하는지에 관해서 물어보지 않은 채 마음대로 추측하고 단정하는 방식",e:"나는 아이 표정만 봐도 걔가 무슨 생각을 하는지 다 알아"}
+];
+var NEEDS=["인정","이해받음","존중","공감","안전","휴식","연결","소속","자율","신뢰","사랑","도움·지원","공정함","성장","예측 가능성","재미","의미","혼자만의 시간"];
+
+function h(tag,attrs){
+  var el=document.createElement(tag),i,c;
+  if(attrs)for(var k in attrs){
+    if(k==="text")el.textContent=attrs[k];
+    else if(k.slice(0,2)==="on")el.addEventListener(k.slice(2),attrs[k]);
+    else if(attrs[k]!==false&&attrs[k]!=null)el.setAttribute(k,attrs[k]);
+  }
+  for(i=2;i<arguments.length;i++){c=arguments[i];if(c==null||c===false)continue;
+    if(Array.isArray(c))c.forEach(function(x){if(x)el.appendChild(x);});
+    else el.appendChild(typeof c==="string"?document.createTextNode(c):c);}
+  return el;
+}
+function area(id,value,placeholder,oninput,small){
+  var t=h("textarea",{id:id,placeholder:placeholder,"class":small?"small":null});
+  t.value=value||"";t.addEventListener("input",function(){oninput(t.value);touch();});return t;
+}
+function toggleIn(arr,v){var i=arr.indexOf(v);if(i<0)arr.push(v);else arr.splice(i,1);}
+function chips(list,selected,cls){var sec=building;
+  return h("div",{"class":"chips"},list.map(function(w){
+    return h("button",{type:"button","class":"chip"+(cls?" "+cls:""),"aria-pressed":selected.indexOf(w)>=0?"true":"false",text:w,
+      onclick:function(){toggleIn(selected,w);touch();rr(sec);}});
+  }));
+}
+function moodPicker(store,slot){var sec=building;
+  var open=openMood[slot];
+  var grid=h("div",{"class":"mood-grid"},MOODS.map(function(m){
+    var n=(store[m.k]||[]).length;
+    return h("button",{type:"button","class":"mood "+m.k,"aria-expanded":open===m.k?"true":"false",
+      onclick:function(){openMood[slot]=open===m.k?null:m.k;rr(sec);}},
+      h("span",{"class":"name"},h("span",{"class":"dot"}),m.name),
+      h("span",{"class":"sub",text:m.sub}),
+      n?h("span",{"class":"cnt",text:store[m.k].join(", ")}):null);
+  }));
+  var out=[grid];
+  if(open){
+    var m=MOODS.filter(function(x){return x.k===open;})[0];
+    if(!store[m.k])store[m.k]=[];
+    out.push(h("div",{"class":"mood-panel "+m.k},
+      h("p",{"class":"hint",text:m.name+" 영역의 감정입니다. 해당하는 것을 모두 고르세요."}),
+      chips(m.words,store[m.k],m.k)));
+  }else{
+    out.push(h("p",{"class":"hint",text:"색을 누르면 세부 감정이 나옵니다. 여러 색을 함께 골라도 됩니다."}));
+  }
+  return out;
+}
+function optList(list,store,prefix,label,ph,alt){var sec=building;
+  return h("div",{"class":"opts"},list.map(function(o){
+    var on=Object.prototype.hasOwnProperty.call(store,o.k);
+    return h("div",{"class":"opt"+(on?" on":"")},
+      h("button",{type:"button","aria-pressed":on?"true":"false",
+        onclick:function(){if(on){delete store[o.k];delete alt[o.k];}else store[o.k]="";touch();rr(sec);
+          if(!on){var t=document.getElementById(prefix+o.k);if(t)t.focus();}}},
+        h("span",{"class":"box","aria-hidden":"true",text:on?"✓":""}),
+        h("span",null,h("span",{"class":"t",text:o.t}),h("span",{"class":"d",text:o.d}),h("span",{"class":"e",text:o.e}))),
+      on?h("div",{"class":"why"},
+        h("label",{"for":prefix+o.k,text:label}),
+        area(prefix+o.k,store[o.k],ph,function(v){store[o.k]=v;},true),
+        h("label",{"for":prefix+"alt-"+o.k},"다르게 생각해보면 어떤 생각을 할 수 있을까요?",h("span",{"class":"d",text:"존경하는 사람이나 하나님의 시선에서 바라본다면 어떤 생각이 들까요?"})),
+        area(prefix+"alt-"+o.k,alt[o.k],"다르게 볼 수 있는 생각을 적어 주세요.",function(v){alt[o.k]=v;},true)):null);
+  }));
+}
+function title(n){return h("h2",null,h("span",{"class":"n",text:String(n)}),STEPS[n-1]);}
+
+var VIEWS=[
+ function(){return [title(1),
+   h("p",{"class":"hint",text:"마음이 움직인 한 장면을 고르세요. 언제, 어디서, 누구와, 무슨 일이 있었는지 사실만 적어 봅니다."}),
+   area("f-situation",S.situation,"예) 저녁 7시, 거실에서 아이에게 숙제를 물었는데 대답 없이 방문을 닫았다.",function(v){S.situation=v;})];},
+ function(){return [title(2),
+   h("p",{"class":"hint",text:"그 순간 몸에서 어떤 변화가 있었나요?"}),
+   chips(BODY,S.body),
+   area("f-body",S.bodyText,"그 밖에 느낀 신체 감각을 적어 주세요.",function(v){S.bodyText=v;},true)];},
+ function(){return [title(3),
+   h("p",{"class":"hint",text:"그때 느낀 감정은 어느 색에 가까웠나요?"})].concat(moodPicker(S.moods,3));},
+ function(){return [title(4),
+   h("h3",null,h("label",{"for":"f-thought",text:"1) 머릿속에 즉각적으로 스친 생각은 무엇이었나요?"})),
+   area("f-thought",S.thought,"떠오른 문장 그대로 적어 보세요.",function(v){S.thought=v;}),
+   h("h3",{text:"2) 그 생각은 아래 자동적 생각에서 어디에 속하나요?"}),
+   h("p",{"class":"hint",text:"해당하는 것을 누르면 이유를 적는 칸이 열립니다. 없으면 넘어가도 됩니다."}),
+   optList(AUTOS,S.autos,"auto-","왜 여기에 속한다고 보나요?","이유를 적어 주세요.",S.autosAlt),
+   h("h3",{text:"3) 아래 인지 오류에 속하는 부분이 있나요?"}),
+   h("p",{"class":"hint",text:"해당하는 것을 누르고, 생각의 어느 부분이 그런지 적어 보세요."}),
+   optList(ERRORS,S.errors,"err-","어떤 부분이 해당하나요?","내 생각의 어느 부분이 그런지 적어 주세요.",S.errorsAlt)];},
+ function(){return [title(5),
+   h("p",{"class":"hint",text:"그 상황에서의 나를 이해해 본다면요? 친한 친구가 같은 일을 겪었다면 건넬 말을 떠올려 보세요."}),
+   area("f-understand",S.understand,"예) 하루 종일 지쳐 있었고, 무시당한 것 같아 서운했구나.",function(v){S.understand=v;})];},
+ function(){return [title(6),
+   h("p",{"class":"hint",text:"어떤 욕구가 있었나요? 내가 정말 바랐던 것, 중요하게 여긴 것을 찾아봅니다."}),
+   chips(NEEDS,S.needs),
+   area("f-need",S.needText,"예) 내 말이 존중받기를, 아이와 연결되기를 바랐다.",function(v){S.needText=v;})];},
+ function(){return [title(7),
+   h("p",{"class":"hint",text:"이 마음과 욕구를 돌보기 위해 다음에 해볼 수 있는 작은 행동은 무엇인가요? 해볼 만한 것을 고르거나 직접 적어 보세요."}),
+   chips(ACTIONS,S.actions),
+   area("f-action",S.actionText,"내가 정한 다음 행동을 적어 주세요. 예) 저녁 먹고 아이에게 아까 서운했다고 차분히 말하기",function(v){S.actionText=v;}),
+   h("h3",null,h("label",{"for":"f-plan",text:"언제까지, 무엇을, 몇 번 해 보시겠어요?"})),
+   h("p",{"class":"hint",text:"위에서 고른 행동을 실제로 할 수 있게 기한, 행동, 횟수를 넣어 한 문장으로 적어 보세요."}),
+   area("f-plan",S.actionPlan,"예) 이번 주 금요일까지, 저녁 식사 후 10분 산책을 3번 해 보겠다.",function(v){S.actionPlan=v;},true)];},
+ function(){return [title(8),
+   h("p",{"class":"hint",text:"여기까지 적고 난 지금 마음은 어떤가요?"})].concat(moodPicker(S.checkMoods,7),
+   [area("f-check",S.checkText,"달라진 점이나 지금 느끼는 것을 적어 주세요.",function(v){S.checkText=v;})]);}
+];
+
+function stepFilled(i,S){
+  var any=function(o){return Object.keys(o).some(function(k){return Array.isArray(o[k])?o[k].length:true;});};
+  return [S.situation.trim(),S.body.length||S.bodyText.trim(),any(S.moods),S.thought.trim()||any(S.autos)||any(S.errors),
+    S.understand.trim(),S.needs.length||S.needText.trim(),S.actions.length||S.actionText.trim()||S.actionPlan.trim(),any(S.checkMoods)||S.checkText.trim()][i]?true:false;
+}
+function fmt(ts){var d=new Date(ts),p=function(n){return String(n).padStart(2,"0");};
+  return d.getFullYear()+"."+p(d.getMonth()+1)+"."+p(d.getDate())+" "+p(d.getHours())+":"+p(d.getMinutes());}
+function moodText(m){return MOODS.filter(function(x){return m&&m[x.k]&&m[x.k].length;}).map(function(x){return x.name+": "+m[x.k].join(", ");}).join("\n");}
+function pickText(list,store,alt){return list.filter(function(o){return store&&Object.prototype.hasOwnProperty.call(store,o.k);})
+  .map(function(o){return "· "+o.t+(store[o.k]?" — "+store[o.k]:"")+(alt&&alt[o.k]?"\n  ↳ 다르게 생각해 보면: "+alt[o.k]:"");}).join("\n");}
+function fields(r){
+  return [["1. 상황",r.situation],
+   ["2. 신체 반응",[(r.body||[]).join(", "),r.bodyText].filter(Boolean).join("\n")],
+   ["3. 감정 관찰",moodText(r.moods)],
+   ["4. 생각 관찰 · 스친 생각",r.thought],
+   ["4. 생각 관찰 · 자동적 생각",pickText(AUTOS,r.autos,r.autosAlt)],
+   ["4. 생각 관찰 · 인지 오류",pickText(ERRORS,r.errors,r.errorsAlt)],
+   ["5. 이해",r.understand],
+   ["6. 욕구",[(r.needs||[]).join(", "),r.needText].filter(Boolean).join("\n")],
+   ["7. 다음 행동",[(r.actions||[]).join(", "),r.actionText,r.actionPlan?"구체적인 계획: "+r.actionPlan:""].filter(Boolean).join("\n")],
+   ["8. 점검",[moodText(r.checkMoods),r.checkText].filter(Boolean).join("\n")]
+  ].filter(function(f){return f[1]&&String(f[1]).trim();});
+}
+
+var KEY="thought-record-20days", TOTAL=20;
+function blank(){return {situation:"",body:[],bodyText:"",moods:{},thought:"",autos:{},errors:{},understand:"",needs:[],needText:"",autosAlt:{},errorsAlt:{},actions:[],actionText:"",actionPlan:"",checkMoods:{},checkText:""};}
+function lsGet(k){try{var v=localStorage.getItem(k);return v?JSON.parse(v):null;}catch(e){return null;}}
+function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true;}catch(e){return false;}}
+var DB=lsGet(KEY);if(!DB||typeof DB.days!=="object"||!DB.days)DB={days:{}};
+var S=null,cur=0,openMood={3:null,7:null},building=0,sections=[],saveT=null,storeOk=true,pendingImport=null,calMsg="";
+
+function persist(){storeOk=lsSet(KEY,DB);var el=document.getElementById("saved");
+  if(el){var d=new Date(),p=function(n){return String(n).padStart(2,"0");};
+    el.textContent=storeOk?"자동 저장됨 "+p(d.getHours())+":"+p(d.getMinutes()):"저장하지 못했습니다. 브라우저 저장 공간이나 사생활 보호 모드를 확인해 주세요.";}}
+function touch(){if(!S)return;if(!S.startedAt)S.startedAt=Date.now();S.updatedAt=Date.now();clearTimeout(saveT);saveT=setTimeout(persist,400);}
+function flush(){if(saveT){clearTimeout(saveT);saveT=null;persist();}}
+window.addEventListener("pagehide",flush);
+document.addEventListener("visibilitychange",function(){if(document.hidden)flush();});
+
+function anyFilled(d){return [0,1,2,3,4,5,6,7].some(function(i){return stepFilled(i,d);});}
+function dayState(n){var d=DB.days[n];if(!d)return "empty";d=Object.assign(blank(),d);if(d.done)return "done";return anyFilled(d)?"draft":"empty";}
+function nextDay(){for(var n=1;n<=TOTAL;n++)if(dayState(n)!=="done")return n;return 0;}
+function unlocked(n){var nx=nextDay();return nx===0||n<=nx;}
+function md(ts){var d=new Date(ts);return (d.getMonth()+1)+"."+d.getDate();}
+function asText(n,r){return "생각 기록 "+n+"일차"+(r.startedAt?" ("+fmt(r.startedAt)+")":"")+"\n\n"+fields(r).map(function(f){return "["+f[0]+"]\n"+f[1];}).join("\n\n");}
+function rr(i){building=i;var el=sections[i];el.replaceChildren.apply(el,VIEWS[i]().filter(Boolean));renderShare();}
+var shareSel={},shareEl=null,shareT=null;
+function stepFields(i,fs){return fs.filter(function(f){return f[0].indexOf(i+".")===0;});}
+function shareText(n){
+  var fs=fields(S),parts=[],i,mine;
+  for(i=1;i<=STEPS.length;i++){if(!shareSel[i])continue;mine=stepFields(i,fs);
+    if(mine.length)parts.push(mine.map(function(f){return "▪ "+f[0].replace(/^\d+\.\s*/,"")+"\n"+f[1];}).join("\n"));}
+  return parts.length?"[생각 기록 "+n+"일차 · "+md(S.startedAt||Date.now())+"]\n\n"+parts.join("\n\n"):"";
+}
+function renderShare(){
+  if(!shareEl||!S)return;
+  var fs=fields(S),text=shareText(cur);
+  var picks=h("div",{"class":"chips"},STEPS.map(function(name,idx){
+    var i=idx+1,has=stepFields(i,fs).length>0;
+    return h("button",{type:"button","class":"chip","aria-pressed":shareSel[i]&&has?"true":"false",disabled:has?null:"disabled",text:i+" "+name,
+      onclick:function(){shareSel[i]=!shareSel[i];renderShare();}});
+  }));
+  var copy=h("button",{type:"button","class":"btn primary",style:"margin-left:0",text:"카드 복사",disabled:text?null:"disabled",onclick:function(){
+    navigator.clipboard.writeText(shareText(cur)).then(function(){copy.textContent="복사했습니다. 채팅방에 붙여넣으세요";},function(){copy.textContent="복사하지 못했습니다";});
+    setTimeout(function(){copy.textContent="카드 복사";},2500);}});
+  shareEl.replaceChildren(
+    h("h2",{text:"나눔 카드"}),
+    h("p",{"class":"hint",text:"그룹 채팅방에 올릴 부분만 누르세요. 누른 부분만 카드에 들어가고, 적지 않은 단계는 고를 수 없습니다."}),
+    picks,
+    text?h("div",{"class":"sharecard",text:text}):h("p",{"class":"note",text:"아직 고른 부분이 없습니다."}),
+    copy);
+}
+document.getElementById("view-day").addEventListener("input",function(){clearTimeout(shareT);shareT=setTimeout(renderShare,300);});
+
+/* ---------- calendar ---------- */
+function renderCal(){
+  var box=document.getElementById("view-cal"),nx=nextDay(),done=0,n,cells=[];
+  for(n=1;n<=TOTAL;n++){(function(n){
+    var st=dayState(n),lock=!unlocked(n),d=DB.days[n]||{},sub="",label="";
+    if(st==="done"){done++;sub=md(d.doneAt||d.updatedAt||Date.now());label="완료";}
+    else if(st==="draft"){sub="작성 중";label="작성 중";}
+    else if(n===nx){sub="시작";label="시작할 차례";}
+    else{label="아직 열리지 않음";}
+    var dots=h("span",{"class":"dots"},st==="done"?MOODS.filter(function(m){return d.moods&&d.moods[m.k]&&d.moods[m.k].length;}).map(function(m){return h("i",{"class":m.k});}):[]);
+    cells.push(h("button",{type:"button","class":"cell "+st+(n===nx?" next":""),disabled:lock?"disabled":null,"aria-label":n+"일차, "+label,
+      onclick:function(){location.hash="#day-"+n;}},
+      h("span",{"class":"num",text:String(n)}),h("span",{"class":"st",text:sub}),dots));
+  })(n);}
+  var cta=nx?h("a",{"class":"btn primary",href:"#day-"+nx,style:"text-align:center;text-decoration:none;margin-left:0",text:nx+"일차 "+(dayState(nx)==="draft"?"이어 쓰기":"시작하기")}):
+    h("p",{"class":"hint",text:"20일을 모두 마쳤습니다. 날짜를 눌러 지난 기록을 다시 읽어 보세요."});
+  var card=h("section",{"class":"card"},
+    h("h2",{text:"20일 달력"}),
+    h("p",{"class":"hint",text:"하루에 한 장면씩 적습니다. 앞 일차를 완료하면 다음 일차가 열리고, 완료한 날은 언제든 다시 열어 고칠 수 있습니다."}),
+    h("div",{"class":"bar",role:"img","aria-label":TOTAL+"일 중 "+done+"일 완료"},h("i",{style:"width:"+(done/TOTAL*100)+"%"})),
+    h("p",{"class":"note",text:TOTAL+"일 중 "+done+"일 완료"}),
+    h("div",{"class":"cal"},cells),cta);
+  var m=calMsg;calMsg="";
+  box.replaceChildren(card,backupBar(),m?h("p",{"class":"note",role:"status",text:m}):document.createTextNode(""),
+    h("p",{"class":"note",text:"기록은 이 기기의 이 브라우저에만 저장되며 누구에게도 전송되지 않습니다. 브라우저 데이터를 지우면 함께 사라지니 가끔 백업해 두세요."}));
+}
+function hasAny(){return Object.keys(DB.days).some(function(k){return dayState(k)!=="empty";});}
+function applyImport(data){DB={days:data.days};persist();pendingImport=null;calMsg=storeOk?"백업 파일의 기록을 불러왔습니다.":"불러온 기록을 저장하지 못했습니다.";renderCal();}
+function backupBar(){
+  if(pendingImport){
+    return h("div",{"class":"acts"},h("span",{"class":"msg",text:"지금 이 브라우저의 기록을 백업 파일 내용으로 바꿉니다."}),
+      h("button",{type:"button","class":"btn sm danger",text:"바꾸기",onclick:function(){applyImport(pendingImport);}}),
+      h("button",{type:"button","class":"btn sm",text:"취소",onclick:function(){pendingImport=null;renderCal();}}));
+  }
+  var file=h("input",{type:"file",id:"backup-file",accept:"application/json,.json",hidden:"hidden"});
+  file.addEventListener("change",function(){
+    var f=file.files&&file.files[0];if(!f)return;var rd=new FileReader();
+    rd.onload=function(){
+      try{var data=JSON.parse(rd.result);
+        if(!data||data.app!=="thought-record-20days"||typeof data.days!=="object"||!data.days)throw new Error("format");
+        if(hasAny()){pendingImport=data;renderCal();}else applyImport(data);
+      }catch(e){calMsg="불러오지 못했습니다. 이 페이지에서 내려받은 백업 파일인지 확인해 주세요.";renderCal();}
+    };
+    rd.onerror=function(){calMsg="파일을 읽지 못했습니다.";renderCal();};
+    rd.readAsText(f);
+  });
+  var exp=h("button",{type:"button","class":"btn sm",text:"백업 파일 내려받기",disabled:hasAny()?null:"disabled",onclick:function(){
+    var d=new Date(),p=function(n){return String(n).padStart(2,"0");};
+    var blob=new Blob([JSON.stringify({app:"thought-record-20days",version:1,exportedAt:Date.now(),days:DB.days},null,2)],{type:"application/json"});
+    var url=URL.createObjectURL(blob),a=h("a",{href:url,download:"생각기록20일-백업-"+d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+".json"});
+    document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},1000);}});
+  var imp=h("button",{type:"button","class":"btn sm",text:"백업 파일 불러오기",onclick:function(){file.click();}});
+  var armed=false;
+  var reset=h("button",{type:"button","class":"btn sm danger",text:"모두 지우고 처음부터",disabled:hasAny()?null:"disabled",onclick:function(){
+    if(!armed){armed=true;reset.textContent="한 번 더 누르면 20일 기록이 모두 지워집니다";setTimeout(function(){armed=false;reset.textContent="모두 지우고 처음부터";},4000);return;}
+    DB={days:{}};persist();calMsg="기록을 모두 지웠습니다.";renderCal();}});
+  return h("div",{"class":"acts"},exp,imp,reset,file);
+}
+
+/* ---------- one day, top to bottom ---------- */
+function renderDay(n){
+  cur=n;S=DB.days[n]=Object.assign(blank(),DB.days[n]||{});openMood={3:null,7:null};
+  var box=document.getElementById("view-day"),i;
+  sections=STEPS.map(function(_,i){return h("section",{"class":"card",id:"sec-"+(i+1)});});
+  shareSel={};shareEl=h("section",{"class":"card",id:"share"});
+  var msg=h("p",{"class":"msg",hidden:"hidden"});
+  var copy=h("button",{type:"button","class":"btn",text:"글로 복사",onclick:function(){
+    navigator.clipboard.writeText(asText(n,S)).then(function(){copy.textContent="복사했습니다";},function(){copy.textContent="복사하지 못했습니다";});
+    setTimeout(function(){copy.textContent="글로 복사";},2000);}});
+  var fin=h("button",{type:"button","class":"btn primary",text:S.done?"고친 내용 저장하고 달력으로":n+"일차 완료",onclick:function(){
+    if(!anyFilled(S)){msg.textContent="아직 적은 내용이 없습니다. 한 단계라도 적은 뒤 완료해 주세요.";msg.hidden=false;return;}
+    S.done=true;if(!S.startedAt)S.startedAt=Date.now();if(!S.doneAt)S.doneAt=Date.now();S.updatedAt=Date.now();
+    clearTimeout(saveT);saveT=null;persist();
+    if(!storeOk){msg.textContent="저장하지 못했습니다. 내용은 화면에 그대로 있습니다. 글로 복사해 두고 브라우저 저장 공간을 확인해 주세요.";msg.hidden=false;return;}
+    location.hash="#calendar";}});
+  box.replaceChildren(
+    h("div",{"class":"daytop"},h("a",{href:"#calendar",text:"← 달력"}),h("h2",{text:n+"일차"}),h("span",{"class":"date",text:fmt(S.startedAt||Date.now()).slice(0,10)})),
+    h("p",{"class":"note",id:"saved",text:"위에서 아래로 차례대로 적어 내려가세요. 적는 대로 자동 저장됩니다."}));
+  sections.forEach(function(s){box.appendChild(s);});box.appendChild(shareEl);
+  box.appendChild(msg);box.appendChild(h("div",{"class":"finish"},fin,copy));
+  for(i=0;i<sections.length;i++)rr(i);
+}
+
+/* ---------- routing ---------- */
+function route(){
+  flush();
+  var m=/^#day-(\d+)$/.exec(location.hash),n=m?parseInt(m[1],10):0,day=n>=1&&n<=TOTAL&&unlocked(n);
+  document.getElementById("view-cal").hidden=day;
+  document.getElementById("view-day").hidden=!day;
+  if(day)renderDay(n);else{S=null;renderCal();}
+  try{window.scrollTo(0,0);}catch(e){}
+}
+window.addEventListener("hashchange",route);
+var now=new Date();
+document.getElementById("today").textContent=now.getFullYear()+"년 "+(now.getMonth()+1)+"월 "+now.getDate()+"일 "+"일월화수목금토".charAt(now.getDay())+"요일";
+route();
+})();
+</script>
+</body>
+</html>
